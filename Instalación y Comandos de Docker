@@ -12,7 +12,7 @@ https://docs.docker.com/install/linux/docker-ce/ubuntu/
 service docker status | systemctl status docker
 
 -------------------------------------
-#Post-Instalación
+# Post-Instalación
 sudo systemctl edit docker.service
 sudo systemctl daemon-reload
 sudo systemctl restart docker.service
@@ -20,14 +20,14 @@ sudo netstat -lntp | grep dockerd
 env | grep DOCKER_HOST
 export DOCKER_HOST=tcp://127.0.0.1:2375
 
-#Gestión de Imágenes
+# Gestión de Imágenes
 docker images
 docker history
 docker inspect
 docker save/load
 docker rmi
 
-#Gestión de Contenedores
+# Gestión de Contenedores
 docker attach
 docker exec
 docker inspect -f '{{.Name}}' test2
@@ -46,7 +46,7 @@ docker stats 2u21h2hcdaju
 docker top
 docker update
 
-#Ejemplos de ejecución
+# Ejemplos de ejecución
 --#Los argumentos se quedan en las capas de las imágenes
 docker build -t args --build-arg password=secret --build-arg user=pablo .
 docker run -d -p 81:5000 training/webapp python app.py
@@ -82,25 +82,25 @@ docker exec -it 08db4f9a56f7 /bin/bash
 nginx -t
 service nginx reload
 -------------------------------------------------
-#Parar y Borrar contenedores
+# Parar y Borrar contenedores
 docker ps -a | cut -d " " -f 1 | grep [0-9] | xargs docker stop
 docker ps -a | cut -d " " -f 1 | grep [0-9] | xargs docker rm
 
-#Buscar subnet o gateway
+# Buscar subnet o gateway
 docker network inspect MyLAN | grep -E "Name|Subnet|Gateway"
 -------------------------------------------------
 docker volume ls
 docker run -d -P --name web3 -v /webapp training/webapp python app.py
 
-#Compartir volumen entre contenedores y la maquina local:
+# Compartir volumen entre contenedores y la maquina local:
 mkdir ~/nginxlogs
 docker run -d -v ~/nginxlogs:/var/log/nginx -p 82:80 -ti nginx
 
-#En la maquina local tendremos acceso al volumen sin acceder al contenedor:
+# En la maquina local tendremos acceso al volumen sin acceder al contenedor:
 tail -f ~/nginxlogs/access.log
 curl localhost:82
 
-#Compartir un volumen entre contedores:
+# Compartir un volumen entre contedores:
 docker run -t -i --volumes-from datacontainer ubuntu /bin/bash
 # cd /tmp/
 # echo "Hola" > archivo
@@ -109,7 +109,7 @@ docker run -t -i --volumes-from datacontainer ubuntu /bin/bash
 docker run -t -i --volumes-from datacontainer debian /bin/bash
 # cat /tmp/archivo
 -------------------------------------------------
-#Exportar contenedores de stg a tu entorno local
+# Exportar contenedores de stg a tu entorno local
 cat ~/ucp/stage/env.sh
 export DOCKER_TLS_VERIFY=1
 export DOCKER_CERT_PATH=/Users/Mario/ucp/stage
@@ -120,3 +120,40 @@ export DOCKER_HOST=tcp://ucp.stage-us-east-1.aws.dckr.io:443
 source ~/ucp/stage/env.sh
 docker ps -a
 
+# Levanta un docker compose en local
+docker-compose up -d
+docker-compose up -d --build
+
+# Reconstruye las imágenes de los servicios que tengan una sección de build definida
+docker-compose build
+docker-compose build web redis
+
+# Elimina los contenedores y otros recursos como redes, creados a partir de un compose. (Sin pedir confirmación)
+docker-compose -rm -sf
+
+# Descarga las imágenes en local
+docker-compose pull
+
+# Ejecuta un ls dentro de ese contenedor
+docker-compose run --rm --entrypoint ls web
+
+# Volumenes de datos (Directorio acoplado al contenedor seguirá existiendo, por lo que tiene persistencia 
+# y tener un alto rendimiento de entrada y salida al disco)
+# Volumenes de Host (Directorio del host dentro del contenedor, por si necesita acceder a archivos de conf)
+docker volume --help
+
+# Variable de entorno
+example:
+    image: golang:${GO_VERSION:-1.9}
+    command: go test ./...
+
+# Me cogerá la versión 1.9
+docker-compose pull
+
+# Me cogerá la 1.8
+GO_VERSION=1.8 docker-compose pull
+
+# Me cogerá la versión 1.7
+export GO_VERSION=1.7
+docker-compuse pull
+unset GO_VERSION
