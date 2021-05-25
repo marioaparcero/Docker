@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<!-- saved from url=(0066)https://programacionymas.com/blog/docker-diferencia-entrypoint-cmd -->
+<html lang="es" class="" data-lt-installed="true"><script async="" src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/analytics.js"></script><script type="text/javascript">window["_gaUserPrefs"] = { ioo : function() { return true; } }</script><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <title>Docker: Diferencia entre ENTRYPOINT y CMD</title>
+    <meta name="description" content="¿Quieres saber cuál es la diferencia entre ENTRYPOINT y CMD? ¡Yo también!">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <meta name="csrf-token" content="9XpDenCH2NZeOn7s9x25rybfn8nzMoQctkUajYQ8">
+
+    <meta property="og:url" content="https://programacionymas.com/blog/docker-diferencia-entrypoint-cmd">
+    <meta property="og:type" content="article">
+    <meta property="article:publisher" content="https://www.facebook.com/programacionymas">
+    <meta property="og:title" content="Docker: Diferencia entre ENTRYPOINT y CMD">
+    <meta property="og:description" content="¿Quieres saber cuál es la diferencia entre ENTRYPOINT y CMD? ¡Yo también!">
+    <meta property="og:image" content="https://res.cloudinary.com/pym/image/upload/f_auto/v1/articles/2019/docker/cmd-entrypoint/cmd-vs-entrypoint">
+
+    <meta name="author" content="Juan Ramos">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <meta name="twitter:site" content="@programacionym">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Docker: Diferencia entre ENTRYPOINT y CMD">
+    <meta name="twitter:description" content="¿Quieres saber cuál es la diferencia entre ENTRYPOINT y CMD? ¡Yo también!">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="https://programacionymas.com/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://programacionymas.com/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://programacionymas.com/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://programacionymas.com/favicon-16x16.png">
+    <link rel="manifest" href="https://programacionymas.com/site.webmanifest">
+    <link rel="mask-icon" href="https://programacionymas.com/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#00aba9">
+    <meta name="theme-color" content="#5c5b60">
+
+    <link rel="stylesheet" href="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/font-awesome.min.css" as="style" onload="this.onload=null;this.rel=&#39;stylesheet&#39;">
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></noscript>
+    <link href="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/app.css" rel="stylesheet">
+
+    
+    <style type="text/css">#bio_ep_bg {display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; opacity: 0.3; z-index: 10001;}#bio_ep {display: none; position: fixed; font-family: 'Titillium Web', sans-serif; font-size: 16px; left: 50%; top: 50%; transform: translateX(-50%) translateY(-50%); -webkit-transform: translateX(-50%) translateY(-50%); -ms-transform: translateX(-50%) translateY(-50%); background-color: #fff; box-shadow: 0px 1px 4px 0 rgba(0,0,0,0.5); z-index: 10002;}#bio_ep_close {position: absolute; left: 100%; margin: -8px 0 0 -12px; width: 20px; height: 20px; color: #fff; font-size: 12px; font-weight: bold; text-align: center; border-radius: 50%; background-color: #5c5c5c; cursor: pointer;}</style><style>footer,header,main{padding-left:240px}@media  only screen and (max-width :1440px){footer,header,main{padding-left:0}}</style>
+            <link rel="stylesheet" href="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/modal-exit.css" as="style" onload="this.onload=null;this.rel=&#39;stylesheet&#39;">
+<noscript><link rel="stylesheet" href="https://programacionymas.com/src/css/layout/modal-exit.css"></noscript>    
+    <script>
+    !function(t){"use strict";t.loadCSS||(t.loadCSS=function(){});var e=loadCSS.relpreload={};if(e.support=function(){var e;try{e=t.document.createElement("link").relList.supports("preload")}catch(t){e=!1}return function(){return e}}(),e.bindMediaToggle=function(t){var e=t.media||"all";function a(){t.media=e}t.addEventListener?t.addEventListener("load",a):t.attachEvent&&t.attachEvent("onload",a),setTimeout(function(){t.rel="stylesheet",t.media="only x"}),setTimeout(a,3e3)},e.poly=function(){if(!e.support())for(var a=t.document.getElementsByTagName("link"),n=0;n<a.length;n++){var o=a[n];"preload"!==o.rel||"style"!==o.getAttribute("as")||o.getAttribute("data-loadcss")||(o.setAttribute("data-loadcss",!0),e.bindMediaToggle(o))}},!e.support()){e.poly();var a=t.setInterval(e.poly,500);t.addEventListener?t.addEventListener("load",function(){e.poly(),t.clearInterval(a)}):t.attachEvent&&t.attachEvent("onload",function(){e.poly(),t.clearInterval(a)})}"undefined"!=typeof exports?exports.loadCSS=loadCSS:t.loadCSS=loadCSS}("undefined"!=typeof global?global:this);
+</script>
+        <link rel="stylesheet" href="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/show.css">
+        <link rel="stylesheet" href="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/prism.min.css">
+    
+    <script type="application/ld+json">
+{
+    "@context" : "http://schema.org",
+    "@type" : "Organization",
+    "name" : "Programación y más",
+    "url" : "https://programacionymas.com",
+    "sameAs" : [
+        "https://facebook.com/programacionymas",
+        "https://twitter.com/programacionym"
+    ]
+}
+</script></head>
+
+<body class="">
+
+
+
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark elegant-color double-nav">
+
+    <div class="float-left">
+        <a href="https://programacionymas.com/blog/docker-diferencia-entrypoint-cmd#" data-activates="slide-out" class="button-collapse ml-0 ml-sm-3"><i class="fa fa-bars"></i></a>
+    </div>
+
+    <div class="ml-2">
+        <a class="navbar-brand" href="https://programacionymas.com/">
+            <img src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/pym_white_svg.svg" title="Programación y más" alt="Logo de Programación y más" height="24">
+        </a>
+    </div>
+
+    <ul class="nav navbar-nav nav-flex-icons ml-auto">
+        <li class="nav-item mr-1 mr-sm-3">
+            <a class="nav-link waves-effect waves-light" href="https://programacionymas.com/series">
+                <i class="fa fa-play-circle"></i>
+                <span class="clearfix d-none d-sm-inline-block">Series</span>
+            </a>
+        </li>
+        <li class="nav-item mr-1 mr-sm-3">
+            <a class="nav-link waves-effect waves-light" href="https://programacionymas.com/blog">
+                <i class="fa fa-book"></i>
+                <span class="clearfix d-none d-sm-inline-block">Tutoriales</span>
+            </a>
+        </li>
+        <li class="nav-item mr-1 mr-sm-3">
+            <a class="nav-link waves-effect waves-light" href="https://programacionymas.com/portafolio">
+                <i class="fa fa-shopping-cart"></i>
+                <span class="clearfix d-none d-sm-inline-block">Tienda</span>
+            </a>
+        </li>
+                    <li class="nav-item mr-0 mr-sm-3">
+                <a class="nav-link waves-effect waves-light" data-toggle="modal" data-target="#modalLRForm">
+                    <i class="fa fa-sign-in"></i>
+                    <span class="clearfix d-none d-sm-inline-block">Ingresar</span>
+                </a>
+            </li>
+            </ul>
+</nav>
+        
+    </header>
+
+<div id="slide-out" class="side-nav fixed elegant-color" style="transform: translateX(0%);">
+    <ul class="list-unstyled custom-scrollbar" style="max-height:100vh;">
+        <li>
+            <div class="logo-wrapper waves-light text-center waves-effect waves-light">
+                <a href="https://programacionymas.com/">
+                    <img src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/pym_full_transparent_white.png" alt="Logo de Programación y más">
+                </a>
+            </div>
+        </li>
+        <li>
+            <ul id="side-menu" class="collapsible collapsible-accordion">
+                <li class="menu-item">
+                    <a class="collapsible-header waves-effect" href="https://programacionymas.com/blog">
+                        <i class="fa fa-book"></i> Ir al blog
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="collapsible-header waves-effect" href="https://programacionymas.com/portafolio">
+                        <i class="fa fa-shopping-cart"></i> Tienda de apps
+                    </a>
+                </li>
+                
+                    
+                        
+                    
+                
+                <li class="menu-item">
+                    <a class="collapsible-header waves-effect" href="https://programacionymas.com/guia-de-inicio/programacion-y-mas">
+                        <i class="fa fa-magic"></i> Nunca he programado
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="collapsible-header waves-effect" href="https://desarrollo.programacionymas.com/" target="_blank" title="¿Necesitas una aplicación móvil y/o web?">
+                        <i class="fa fa-code"></i> ¿Necesitas 1 app?
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="collapsible-header waves-effect" href="https://programacionymas.com/asesoria" title="¿Necesitas clases particulares?">
+                        <i class="fa fa-graduation-cap"></i> ¿Buscas clases?
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="collapsible-header waves-effect" href="https://programacionymas.com/blog/todo-es-posible-si-estas-dispuesto-a-pagar-el-precio" title="Si estás dispuesto">
+                        <i class="fa fa-check"></i> Todo es posible
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a class="collapsible-header waves-effect" href="https://programacionymas.com/contacto" target="_blank">
+                        <i class="fa fa-bug"></i> Reportar error
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<main>
+        <ol class="breadcrumb elegant-color-dark mb-0 mb-sm-3 mb-md-4">
+        <li class="breadcrumb-item"><a href="https://programacionymas.com/">Inicio</a></li>
+        <li class="breadcrumb-item"><a href="https://programacionymas.com/blog">Blog</a></li>
+        <li class="breadcrumb-item active"><a href="https://programacionymas.com/categorias/devops">DevOps</a></li>
+    </ol>
+
+    <div class="container-fluid">
+            <div class="section section-blog-fw container">
+        <div class="excerpt pt-4 pb-3">
+            <h1 class="h1-responsive mb-2">Docker: Diferencia entre ENTRYPOINT y CMD</h1>
+            <p>En Docker, podemos construir imágenes a partir de archivos de texto plano conocidos como Dockerfiles.</p>
+<p>Un Dockerfile nos permite definir un comando a ejecutar por defecto, para cuando se inicien contenedores a partir de nuestra imagen.</p>
+<p>Tenemos 2 instrucciones para este propósito: ENTRYPOINT y CMD. </p>
+<h2>¿Qué ocurre al definir un CMD sin definir un ENTRYPOINT?</h2>
+<p>Si sólo especificas un <code>CMD</code>, entonces Docker ejecutará dicho comando usando el <code>ENTRYPOINT</code> por defecto, que es <code>/bin/sh -c</code>. </p>
+<p>Respecto al "entrypoint" (punto de entrada) y "cmd" (comando), puedes sobreescribir ninguno, ambos, o sólo uno de ellos. </p>
+<p>Si especificas ambos, entonces:</p>
+<ul>
+<li>El <code>ENTRYPOINT</code> especifica el ejecutable que usará el contenedor, </li>
+<li>y <code>CMD</code> se corresponde con los parámetros a usar con dicho ejecutable.</li>
+</ul>
+<h2>Un ejemplo vale más que mil palabras</h2>
+<p>Por ejemplo, si tu Dockerfile contiene:</p>
+<pre class=" language-bash"><code class=" language-bash">FROM ubuntu:16.04
+CMD <span class="token punctuation">[</span><span class="token string">"/bin/date"</span><span class="token punctuation">]</span></code></pre>
+<p>Entonces estás usando el ENTRYPOINT por defecto (que es <code>/bin/sh -c</code>), y ejecutando <code>/bin/date</code> sobre dicho punto de entrada. </p>
+<p>El proceso del contenedor se iniciará con la ejecución de <code>/bin/sh -c /bin/date</code>. </p>
+<p>Y al ejecutar esta imagen, el contenedor imprimirá por defecto la fecha actual:</p>
+<pre class=" language-bash"><code class=" language-bash">$ docker build -t <span class="token function">test</span> <span class="token keyword">.</span>
+$ docker run <span class="token function">test</span>
+Tue Dec 19 10:37:43 UTC 2016</code></pre>
+<p>Sin embargo es posible sobreescribir el comando <code>CMD</code> a usar por defecto, desde la misma línea de comandos (en tal caso se ejecutará el comando indicado):</p>
+<pre class=" language-bash"><code class=" language-bash">$ docker run <span class="token function">test</span> /bin/hostname
+bf0274ec8820</code></pre>
+<p>Si usas la instrucción <code>ENTRYPOINT</code>, entonces Docker usará el ejecutable que le indiques, y la instrucción <code>CMD</code> te permitirá definir un parámetro por defecto. </p>
+<p>Por ejemplo, si tu Dockerfile contiene:</p>
+<pre class=" language-bash"><code class=" language-bash">FROM ubuntu:16.04
+ENTRYPOINT <span class="token punctuation">[</span><span class="token string">"/bin/echo"</span><span class="token punctuation">]</span>
+CMD <span class="token punctuation">[</span><span class="token string">"Hello"</span><span class="token punctuation">]</span></code></pre>
+<p>Entonces producirá como resultado:</p>
+<pre class=" language-bash"><code class=" language-bash">$ docker build -t <span class="token function">test</span> <span class="token keyword">.</span>
+$ docker run <span class="token function">test</span>
+Hello</code></pre>
+<p>También puedes especificar un valor diferente para <code>CMD</code> al iniciar un contenedor, y se considerará como parámetro para el ejecutable <code>/bin/echo</code> (en vez del que viene por defecto):</p>
+<pre class=" language-bash"><code class=" language-bash">$ docker run <span class="token function">test</span> Hi
+Hi</code></pre>
+<p>Si lo deseas, también puedes sobreescribir el valor del <code>ENTRYPOINT</code> definido en el Dockerfile.</p>
+<p>Esto es menos común, pero también es posible. </p>
+<p>Por ejemplo, en este caso, te permitiría usar un ejecutable distinto a <code>/bin/echo</code> como punto de entrada:</p>
+<pre class=" language-bash"><code class=" language-bash">$ docker run --entrypoint<span class="token operator">=</span>/bin/hostname <span class="token function">test</span>
+b2c70e74df18</code></pre>
+<h2>Se pueden usar de 2 formas</h2>
+<p>Tenemos 2 formas, en la sintaxis admitida por un Dockerfile, para definir tanto <code>CMD</code> como <code>ENTRYPOINT</code>.</p>
+<p>De hechos ambas sintaxis están disponibles también para la instrucción <code>RUN</code>.</p>
+<p>Las 2 alternativas que tenemos son: "shell form" y "exec form". </p>
+<p>Veamos brevemente en qué consisten, para que ambas maneras te resulten familiares en adelante.</p>
+<h3>Shell form</h3>
+<pre class=" language-bash"><code class=" language-bash"><span class="token operator">&lt;</span>instruction<span class="token operator">&gt;</span> <span class="token operator">&lt;</span>command<span class="token operator">&gt;</span></code></pre>
+<p>Ejemplos:</p>
+<pre class=" language-dockerfile"><code class=" language-dockerfile">RUN apt-get install python3
+CMD echo "Hello world"
+ENTRYPOINT echo "Hello world"</code></pre>
+<p>Cuando las instrucciones se ejecutan en "shell form", el comando correspondiente se ejecuta de esta manera: <code>/bin/sh -c &lt;command&gt;</code>. </p>
+<p>Por ejemplo, en el siguiente Dockerfile:</p>
+<pre class=" language-dockerfile"><code class=" language-dockerfile">ENV name John Dow
+ENTRYPOINT echo "Hello, $name"</code></pre>
+<p>cuando se inicia un contenedor con <code>docker run -it &lt;image&gt;</code> se produce el siguiente resultado:</p>
+<pre class=" language-bash"><code class=" language-bash">Hello, John Dow</code></pre>
+<p>Nótese que la variable "name" es reemplazada con su valor correspondiente.</p>
+<h3>Exec form</h3>
+<p>Esta es la forma preferida para las instrucciones CMD y ENTRYPOINT.</p>
+<pre class=" language-bash"><code class=" language-bash"><span class="token operator">&lt;</span>instruction<span class="token operator">&gt;</span> <span class="token punctuation">[</span><span class="token string">"executable"</span>, <span class="token string">"param1"</span>, <span class="token string">"param2"</span>, <span class="token punctuation">..</span>.<span class="token punctuation">]</span></code></pre>
+<p>Ejemplos:</p>
+<pre class=" language-dockerfile"><code class=" language-dockerfile">RUN ["apt-get", "install", "python3"]
+CMD ["/bin/echo", "Hello world"]
+ENTRYPOINT ["/bin/echo", "Hello world"]</code></pre>
+<p>Cuando se usa "exec form", el ejecutable se llama directamente, sin "shell processing" como en el caso anterior. </p>
+<p>Por ejemplo, para el siguiente Dockerfile:</p>
+<pre class=" language-dockerfile"><code class=" language-dockerfile">ENV name John Dow
+ENTRYPOINT ["/bin/echo", "Hello, $name"]</code></pre>
+<p>cuando se inicia un contenedor con <code>docker run -it &lt;image&gt;</code> se produce el siguiente resultado:</p>
+<pre class=" language-bash"><code class=" language-bash">Hello, <span class="token variable">$name</span></code></pre>
+<p>Y la variable no es sustituida en este caso.</p>
+<h2>Ejemplo usando sólo CMD</h2>
+<p>Veamos ahora un ejemplo ilustrativo usando CMD.</p>
+<p>Para esta demo vamos a definir un Dockerfile que instala las dependencias "cowsay" y "screenfetch", a fin de tener ambos comandos disponibles y usarlos en la explicación.</p>
+<pre class=" language-dockerfile"><code class=" language-dockerfile">FROM debian:jessie-slim
+
+RUN apt-get update                                      &amp;&amp; \
+    apt-get install -y --no-install-recommends             \
+        cowsay                                             \
+        screenfetch                                     &amp;&amp; \
+    rm -rf /var/lib/apt/lists/*
+
+ENV PATH "$PATH:/usr/games"
+CMD ["cowsay", "Yo, CMD !!"]</code></pre>
+<p>Puedes construir una imagen llamada "demo" usando <code>docker build -t demo .</code>, y ejecutar un contenedor con <code>docker run demo</code>.</p>
+<p>Esto ejecutará el comando por defecto indicado en la instrucción <code>CMD</code>, produciendo el siguiente resultado:</p>
+<img src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/ejemplo-2-cmd-default" data-src="https://res.cloudinary.com/pym/image/upload/c_scale,f_auto,q_auto,w_554/articles/2019/docker/cmd-entrypoint/ejemplo-2-cmd-default" alt="Ejemplo usando CMD con su valor por defecto" title="Ejemplo usando CMD con su valor por defecto" width="554">
+<p>Y tal como mencionamos antes, puedes sobreescribir el valor de <code>CMD</code> fácilmente. Por ejemplo, <code>docker run demo screenfetch -E</code> produce el siguiente resultado:</p>
+<img src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/ejemplo-2-cmd-override" data-src="https://res.cloudinary.com/pym/image/upload/c_scale,f_auto,q_auto,w_680/articles/2019/docker/cmd-entrypoint/ejemplo-2-cmd-override" alt="Ejemplo sobreescribiendo el valor de CMD" title="Ejemplo sobreescribiendo el valor de CMD" width="680">
+<h2>Ejemplo usando ENTRYPOINT</h2>
+<p>Si definimos un <code>ENTRYPOINT</code>, lo que se defina como <code>CMD</code> será tomado como argumento para el ejecutable del <code>ENTRYPOINT</code>.</p>
+<pre class=" language-dockerfile"><code class=" language-dockerfile">FROM debian:jessie-slim
+
+RUN apt-get update                                      &amp;&amp; \
+    apt-get install -y --no-install-recommends          \
+        cowsay                                          \
+        screenfetch                             &amp;&amp;      \
+    rm -rf /var/lib/apt/lists/*
+
+ENV PATH "$PATH:/usr/games"
+
+CMD ["Yo, CMD!!"]
+ENTRYPOINT ["cowsay", "Yo, Entrypoint!!"]</code></pre>
+<p>Si construimos una imagen a partir de este último Dockerfile, y ejecutamos un contenedor usando <code>docker run demo</code>, el resultado es:</p>
+<img src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/ejemplo-3-entrypoint-default" data-src="https://res.cloudinary.com/pym/image/upload/c_scale,f_auto,q_auto,w_720/articles/2019/docker/cmd-entrypoint/ejemplo-3-entrypoint-default" alt="Ejemplo usando ENTRYPOINT y un CMD por defecto" title="Ejemplo usando ENTRYPOINT y un CMD por defecto" width="720">
+<p>De igual manera que antes, podemos sobreescribir el valor de <code>CMD</code> fácilmente. Por ejemplo, si usamos <code>docker run demo Overriding arg passed in cmd</code>, el resultado será:</p>
+<img src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/ejemplo-3-entrypoint-override-cmd" data-src="https://res.cloudinary.com/pym/image/upload/c_scale,f_auto,q_auto,w_774/articles/2019/docker/cmd-entrypoint/ejemplo-3-entrypoint-override-cmd" alt="Ejemplo usando ENTRYPOINT y sobreescribiendo el valor de CMD" title="Ejemplo usando ENTRYPOINT y sobreescribiendo el valor de CMD" width="774">
+<h2>Resumen final</h2>
+<p>Generalmente se usa la instrucción <code>ENTRYPOINT</code> para apuntar a la aplicación principal que se desea ejecutar, y <code>CMD</code> para definir unos parámetros por defecto.</p>
+<h2>Enlaces de referencia</h2>
+<ul>
+<li><a href="https://riptutorial.com/docker/example/2700/difference-between-entrypoint-and-cmd" target="_blank">Difference between ENTRYPOINT and CMD</a></li>
+<li><a href="https://dev.to/lasatadevi/docker-cmd-vs-entrypoint-34e0" target="_blank">Docker: cmd VS entrypoint</a></li>
+</ul>
+
+                            <p class="mt-3 mb-0">
+                                            <a href="https://programacionymas.com/tags/docker" class="chip primary-color-dark white-text" title="Ver artículos con hashtag #docker">
+        # docker 
+    
+    </a>                                    </p>
+                    </div>
+    </div>
+    
+    <div class="section p-3 elegant-color-dark rounded">
+        <h4 class="h3-responsive mt-0 white-text text-center">Cursos recomendados</h4>
+        <div class="row">
+            <div class="col-12 col-md-4">
+    <div class="card mt-2">
+        <a href="https://www.udemy.com/course/curso-practico-de-docker-y-microservicios-desde-cero/?couponCode=2021_ABRIL_CUPON" target="_blank">
+        <img src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/docker-microservicios.jpg" class="card-img-top" width="480" data-src="https://res.cloudinary.com/pym/image/upload/c_scale,f_auto,q_auto,w_480/v1615393902/courses/docker-microservicios.jpg" alt="Curso de Docker y Microservicios">
+        </a>
+        <div class="card-body text-center">
+            <h4 class="card-title mt-0 mt-md-2">
+                <a href="https://www.udemy.com/course/curso-practico-de-docker-y-microservicios-desde-cero/?couponCode=2021_ABRIL_CUPON" target="_blank">Docker y Microservicios</a>
+            </h4>
+
+            <p class="card-text">Aprende por qué es importante y cómo funciona Docker, con este nuevo curso práctico!</p>
+
+            <a href="https://www.udemy.com/course/curso-practico-de-docker-y-microservicios-desde-cero/?couponCode=2021_ABRIL_CUPON" class="btn btn-primary waves-effect waves-light" target="_blank">Ingresar al curso</a>
+        </div>
+    </div>
+</div>        <div class="col-12 col-md-4">
+    <div class="card mt-2">
+        <a href="https://www.udemy.com/course/curso-intensivo-de-laravel-y-android-usando-jwt-y-kotlin/?couponCode=2021_ABRIL_CUPON" target="_blank">
+        <img src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/LaravelAndroid.png" class="card-img-top" width="480" data-src="https://res.cloudinary.com/pym/image/upload/c_scale,f_auto,q_auto,w_480/v1599162695/courses/LaravelAndroid.png" alt="Curso intensivo de Laravel y Android">
+        </a>
+        <div class="card-body text-center">
+            <h4 class="card-title mt-0 mt-md-2">
+                <a href="https://www.udemy.com/course/curso-intensivo-de-laravel-y-android-usando-jwt-y-kotlin/?couponCode=2021_ABRIL_CUPON" target="_blank">Laravel y Android</a>
+            </h4>
+
+            <p class="card-text">Curso intensivo que incluye el desarrollo de una API, su consumo, y autenticación vía JWT. También vemos Kotlin desde 0.</p>
+
+            <a href="https://www.udemy.com/course/curso-intensivo-de-laravel-y-android-usando-jwt-y-kotlin/?couponCode=2021_ABRIL_CUPON" class="btn btn-primary waves-effect waves-light" target="_blank">Ingresar al curso</a>
+        </div>
+    </div>
+</div>        <div class="col-12 col-md-4">
+    <div class="card mt-2">
+        <a href="https://www.udemy.com/course/javascript-curso-practico-y-completo/?couponCode=2021_ABRIL_CUPON" target="_blank">
+        <img src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/JS.png" class="card-img-top" width="480" data-src="https://res.cloudinary.com/pym/image/upload/c_scale,f_auto,q_auto,w_480/v1599162695/courses/JS.png" alt="Curso práctico de Javascript">
+        </a>
+        <div class="card-body text-center">
+            <h4 class="card-title mt-0 mt-md-2">
+                <a href="https://www.udemy.com/course/javascript-curso-practico-y-completo/?couponCode=2021_ABRIL_CUPON" target="_blank">Aprende Javascript</a>
+            </h4>
+
+            <p class="card-text">Domina JS con este curso práctico y completo! Fundamentos, ejemplos reales, ES6+, POO, Ajax, Webpack, NPM y más.</p>
+
+            <a href="https://www.udemy.com/course/javascript-curso-practico-y-completo/?couponCode=2021_ABRIL_CUPON" class="btn btn-primary waves-effect waves-light" target="_blank">Ingresar al curso</a>
+        </div>
+    </div>
+</div>    
+    </div>
+    </div>
+
+    <div class="author-box py-4 wow fadeIn">
+        <div class="row">
+            <div class="col-12 col-md-2 col-sm-4 col-xs-6">
+                <img data-src="https://res.cloudinary.com/pym/image/upload/c_scale,f_auto,q_auto:best,w_480/v1545418384/logo/mago/mago-teal.png" src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/mago-teal.png" width="480" alt="Logo de Programación y más" class="img-fluid rounded-circle z-depth-2">
+            </div>
+            <div class="col-12 col-md-10 col-sm-8 col-xs-6">
+                <p><strong>¿Tienes alguna duda?</strong></p>
+                <div class="personal-sm">
+                    <a class="fb-ic" href="https://www.facebook.com/programacionymas" target="_blank">
+                        <i class="fa fa-facebook"></i>
+                    </a>
+                    <a class="yt-ic" href="https://www.youtube.com/user/SorcJC" target="_blank">
+                        <i class="fa fa-youtube-play"></i>
+                    </a>
+                </div>
+                <p>Si algo no te quedó claro o tienes alguna sugerencia, escribe un comentario aquí debajo.</p>
+                <p>Además recuerda compartir el post si te resultó de ayuda! 🙂</p>
+            </div>
+        </div>
+    </div>
+
+            <section class="section-comments p-4">
+            <section id="disqus_thread">
+                <p class="text-center">Cargando comentarios ...</p>
+            </section>
+        </section>
+    
+    </div>
+</main>
+
+    
+                        <div id="bio_ep">
+    <div class="sidebar">
+        <img data-src="https://res.cloudinary.com/pym/image/upload/f_auto,q_auto:best/v1515274102/aprende-laravel-curso.jpg" alt="Curso gratuito de Laravel">
+    </div>
+    <div class="content">
+        <h3>Antes que te vayas</h3>
+        <p>Inscríbete en nuestro curso gratuito de Laravel</p>
+        <form action="https://programacionymas.com/register" method="get">
+            <div class="form-group">
+                <label for="name">Nombre</label>
+                <input type="text" class="form-control" name="name" required="">
+            </div>
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" class="form-control" name="email" required="">
+            </div>
+            <button class="btn btn-primary waves-effect waves-light">
+                Sí, me anoto <i class="fa fa-bolt ml-2"></i>
+            </button>
+        </form>
+    </div>
+</div>            
+    <div class="modal fade" id="modalLRForm" tabindex="-1" role="dialog">
+    <div class="modal-dialog cascading-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-c-tabs">
+
+                
+                <ul class="nav nav-tabs tabs-2 default-color" role="tablist">
+                    <li class="nav-item waves-effect waves-light">
+                        <a id="tabLoginLink" class="nav-link active" data-toggle="tab" href="https://programacionymas.com/blog/docker-diferencia-entrypoint-cmd#panelLogin" role="tab" aria-expanded="true"><i class="fa fa-user mr-1"></i> Login</a>
+                    </li>
+                    <li class="nav-item waves-effect waves-light">
+                        <a id="tabRegisterLink" class="nav-link" data-toggle="tab" href="https://programacionymas.com/blog/docker-diferencia-entrypoint-cmd#panelRegister" role="tab" aria-expanded="false"><i class="fa fa-user-plus mr-1"></i> Registro</a>
+                    </li>
+                </ul>
+
+                
+                <div class="tab-content">
+
+                    
+                    <div class="tab-pane fade in active show" id="panelLogin" role="tabpanel" aria-expanded="true">
+                        <div class="modal-body">
+                            <form id="formLogin">
+                                <div class="md-form form-sm">
+                                    <i class="fa fa-envelope prefix"></i>
+                                    <input type="email" name="email" class="form-control" required="">
+                                    <label for="email">E-mail</label>
+                                </div>
+                                <div class="md-form form-sm mb-0">
+                                    <i class="fa fa-lock prefix"></i>
+                                    <input type="password" name="password" class="form-control mb-0" required="">
+                                    <label for="password">Contraseña</label>
+                                    <p class="small text-right mb-0 mr-3">
+                                        <a href="https://programacionymas.com/password/reset" class="blue-text">¿Olvidaste tu contraseña?</a>
+                                    </p>
+                                </div>
+                                <div class="md-form form-sm">
+                                    <input type="checkbox" id="remember" name="remember">
+                                    <label for="remember">Recordar sesión</label>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <button class="btn btn-info waves-effect waves-light" id="btnLogin">
+                                        Ingresar <i class="fa fa-sign-in ml-1"></i>
+                                    </button>
+                                    <p class="red-text mb-0" id="pLoginError" style="display: none">Los datos ingresados son incorrectos.</p>
+                                    <p class="green-text mb-0" id="pLoginSuccess" style="display: none">Bienvenido!</p>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="text-center text-md-right">
+                                <p>¿No tienes cuenta? <a onclick="$(&#39;#tabRegisterLink&#39;).trigger(&#39;click&#39;);" class="blue-text">Regístrate</a></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+                    <div class="tab-pane fade" id="panelRegister" role="tabpanel" aria-expanded="false">
+                        <div class="modal-body">
+                            <form action="https://programacionymas.com/register" method="get">
+
+                                <div class="md-form form-sm">
+                                    <i class="fa fa-user prefix"></i>
+                                    <input type="text" name="name" class="form-control" required="">
+                                    <label for="name">Nombre</label>
+                                </div>
+
+                                <div class="md-form form-sm">
+                                    <i class="fa fa-envelope prefix"></i>
+                                    <input type="email" name="email" class="form-control" required="">
+                                    <label for="email">E-mail</label>
+                                </div>
+
+                                <div class="text-center form-sm mt-2">
+                                    <button class="btn btn-info waves-effect waves-light">Regístrar <i class="fa fa-sign-in ml-1"></i></button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <p class="text-right">¿Ya te has registrado? <a onclick="$(&#39;#tabLoginLink&#39;).trigger(&#39;click&#39;);" class="blue-text">Inicia sesión</a></p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<footer id="footer" class="page-footer elegant-color-dark center-on-small-only">
+
+    <div class="container">
+        <div class="row">
+
+            <div class="col-md-3">
+                <p class="column-title white-text"><strong>Series por categoría</strong></p>
+                <ul>
+                                        <li>
+                        <a href="https://programacionymas.com/series/categorias/php">
+                            PHP
+                        </a>
+                    </li>
+                                        <li>
+                        <a href="https://programacionymas.com/series/categorias/laravel">
+                            Laravel
+                        </a>
+                    </li>
+                                        <li>
+                        <a href="https://programacionymas.com/series/categorias/java">
+                            Java
+                        </a>
+                    </li>
+                                        <li>
+                        <a href="https://programacionymas.com/series/categorias/android">
+                            Android
+                        </a>
+                    </li>
+                                        <li>
+                        <a href="https://programacionymas.com/series/categorias/bases-de-datos">
+                            Bases de datos
+                        </a>
+                    </li>
+                                        <li>
+                        <a href="https://programacionymas.com/series/categorias/javascript">
+                            Javascript
+                        </a>
+                    </li>
+                                        <li>
+                        <a href="https://programacionymas.com/series/categorias/herramientas-desarrollo-software">
+                            Herramientas
+                        </a>
+                    </li>
+                                        <li>
+                        <a href="https://programacionymas.com/series/categorias/frontend">
+                            Frontend
+                        </a>
+                    </li>
+                                    </ul>
+            </div>
+
+            <hr class="w-100 clearfix d-md-none">
+
+            <div class="col-md-3">
+                <p class="column-title white-text"><strong>Categorías del blog</strong></p>
+                <ul>
+                    <ul>
+                                                    <li>
+                                <a href="https://programacionymas.com/categorias/desarrollo-web">
+                                    Desarrollo web
+                                </a>
+                            </li>
+                                                    <li>
+                                <a href="https://programacionymas.com/categorias/desarrollo-movil">
+                                    Desarrollo móvil
+                                </a>
+                            </li>
+                                                    <li>
+                                <a href="https://programacionymas.com/categorias/productividad-y-motivacion">
+                                    Productividad y motivación
+                                </a>
+                            </li>
+                                                    <li>
+                                <a href="https://programacionymas.com/categorias/buenas-practicas">
+                                    Buenas prácticas
+                                </a>
+                            </li>
+                                                    <li>
+                                <a href="https://programacionymas.com/categorias/bitacora">
+                                    Bitácora
+                                </a>
+                            </li>
+                                                    <li>
+                                <a href="https://programacionymas.com/categorias/bases-de-datos">
+                                    Bases de datos
+                                </a>
+                            </li>
+                                                    <li>
+                                <a href="https://programacionymas.com/categorias/devops">
+                                    DevOps
+                                </a>
+                            </li>
+                                            </ul>
+                </ul>
+
+            </div>
+
+            <hr class="w-100 clearfix d-md-none">
+
+            <div class="col-md-3 mb-1">
+                <p class="column-title white-text"><strong>Guías de inicio</strong></p>
+                <ul>
+                    <li>
+                        <a href="https://programacionymas.com/guia-de-inicio/programacion-y-mas">
+                            Guía de inicio en programación
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://programacionymas.com/guia-de-inicio/desarrollo-web">
+                            Guía de inicio en desarrollo web
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://programacionymas.com/frontend-vs-backend">
+                            Frontend VS Backend
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <hr class="w-100 clearfix d-md-none">
+
+            <div class="col-md-3">
+                <p class="column-title white-text"><strong>Otros enlaces</strong></p>
+                <ul>
+                    
+                    <li>
+                        <a id="footer-link-affiliate" href="https://programacionymas.com/becas" title="Para acceder a los cursos">
+                            Becas y descuentos
+                        </a>
+                    </li>
+                    <li>
+                        <a id="footer-link-sponsorship" href="https://programacionymas.com/about" title="¿Quién escribe?">
+                            Acerca del autor
+                        </a>
+                    </li>
+                    <li>
+                        <a id="footer-link-sponsorship" href="https://programacionymas.com/memes" title="Memes">
+                            Memes
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    <hr>
+
+    
+        
+            
+            
+            
+                
+                    
+                
+                    
+            
+        
+    
+    
+
+    <div class="text-center mb-2">
+        <a id="footer-social-facebook" target="_blank" href="https://www.facebook.com/programacionymas" class="btn-floating btn-sm elegant-color waves-effect waves-light"><i class="fa fa-facebook left"></i></a>
+        <a id="footer-social-twitter" target="_blank" href="https://twitter.com/programacionym" class="btn-floating btn-sm elegant-color waves-effect waves-light"><i class="fa fa-twitter left"></i></a>
+        <a id="footer-social-youtube" target="_blank" href="https://www.youtube.com/SorcJC" class="btn-floating btn-sm elegant-color waves-effect waves-light"><i class="fa fa-youtube left"></i></a>
+        <a id="footer-social-linkedin" target="_blank" href="https://www.linkedin.com/in/jcarlos17" class="btn-floating btn-sm elegant-color waves-effect waves-light"><i class="fa fa-linkedin left"></i></a>
+        <a id="footer-social-github" target="_blank" href="https://www.github.com/JCarlosR" class="btn-floating btn-sm elegant-color waves-effect waves-light"><i class="fa fa-github left"></i></a>
+    </div>
+
+    <div class="footer-copyright wow fadeIn">
+        <div class="container-fluid">
+            © 2017 - 2020 Programación y más. Todos los derechos reservados.
+        </div>
+    </div>
+</footer>
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-26345705-3', 'auto');
+    ga('send', 'pageview');
+</script>
+
+<script src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/all.js"></script>
+
+
+<script>initLogin('https://programacionymas.com/sessions');</script>
+
+            <script>
+function initDisqus() {
+    
+    var disqus_shortname = 'jcarlosr'; // required
+    var disqus_config = function () {
+        this.page.url = window.location.origin + '/blog/docker-diferencia-entrypoint-cmd';
+        this.page.identifier = '/blog/docker-diferencia-entrypoint-cmd';
+        this.page.title = 'Docker: Diferencia entre ENTRYPOINT y CMD';
+    };
+    
+    (function() {
+        var d = document, s = d.createElement('script');
+        s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+}
+
+var disqus_observer = new IntersectionObserver(function(entries) {
+    
+    if (entries[0].isIntersecting) {
+        initDisqus();
+        
+        disqus_observer.disconnect();
+    }
+}, { threshold: [0] });
+disqus_observer.observe(document.querySelector("#disqus_thread"));
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        
+    
+        
+            
+            
+                
+                
+                    
+
+                    
+                        
+                        
+
+                    
+                    
+                        
+                        
+                    
+                
+            
+        
+    
+    
+    
+    <script src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/lazy-load-images.js" defer=""></script>
+    
+        <script src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/prism.js" defer=""></script>
+        
+    <script>
+    function initShareThis() {
+        (function() {
+            var d = document, s = d.createElement('script');
+            s.src = '//platform-api.sharethis.com/js/sharethis.js#property=58f91d5a2fe73a0012cb5106&product=sticky-share-buttons';
+            s.async = true;
+            (d.head || d.body).appendChild(s);
+        })();
+    }
+
+    (function () {
+        const windowScrollEvent = function() {
+            const
+                heightOfWindow = window.innerHeight,
+                contentScrolled = window.pageYOffset,
+                bodyHeight = document.body.offsetHeight;
+
+            const
+                total = bodyHeight - heightOfWindow,
+                got = contentScrolled,
+                percent = got/total * 100;
+
+            if (percent > 25) {
+                // console.log('init shareThis!');
+                initShareThis();
+                window.removeEventListener('scroll', windowScrollEvent);
+            }
+        };
+
+        window.addEventListener('scroll', windowScrollEvent);
+    })();
+</script>
+
+            
+        <script src="./Docker_ Diferencia entre ENTRYPOINT y CMD_files/bioep.min.js"></script>
+        <script>bioEp.init({ 
+                cookieExp: 12,
+                onPopup: function () {
+                    const popupImg = document.querySelector('#bio_ep .sidebar img');
+                    
+                    if (popupImg.dataset.src) {
+                        popupImg.src = popupImg.dataset.src;
+                        popupImg.removeAttribute("data-src");
+                    }
+                }
+        });</script>
+    
+
+<div class="hiddendiv common"></div><div class="drag-target" style="left: 0px; touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);"></div></body></html>
