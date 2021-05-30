@@ -1,0 +1,170 @@
+----------Instalar Docker en Debian 10------------
+Paso 1: Instalar Docker
+apt-get update
+apt-get install \
+apt-transport-https \
+ca-certificates \
+curl \
+gnupg-agent \
+software-properties-common
+
+---------Instalar la llave pública del repositorio Docker--------
+
+curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
+
+#Verificamos que la clave sea la correcta y esté bien instalada.
+apt-key fingerprint 0EBFCD88
+ 
+pub 4096R/0EBFCD88 2017-02-22
+Key fingerprint = 9DC8 5822 9FC7 DD38 854A E2D8 8D81 803C 0EBF CD88
+uid Docker Release (CE deb) <docker@docker.com>
+sub 4096R/F273FCD8 2017-02-22
+
+-----------Creamos el archivo de fuentes con el repo de docker.----------
+
+echo deb [arch=amd64] https://download.docker.com/linux/debian buster stable > /etc/apt/sources.list.d/docker.list
+
+-----------Actualizamos los repos, e instalamos Docker en Debian 10-------------
+
+#Actualizamos los repos ya que agregamos la configuración del repo docker
+
+sudo apt update
+
+#Instalamos docker desde el repo oficial.
+
+apt install -y docker-ce docker-ce-cli containerd.io
+
+-----------Verificamos que esté corriendo----------------
+
+systemctl status docker
+
+-----------Vamos a crear un usuario y lo agregamos al grupo docker----------
+adduser prueba (toor69)
+usermod -aG docker prueba
+id prueba #Para comnprobar que el usuario está en el grupo
+
+--------------Creamos nuestro primer contenedor.------------
+docker run hello-world
+
+
+-------------Uso Imágenes docker juice shop, webGoat y bWapp---------------
+-------------bWAPP--------------
+docker pull raesene/bwapp (Descargar imagen)
+docker run --rm -p 8080:80 raesene/bwapp (Modo normal) (--rm es para cuando se pare se borre)
+docker run -d -p 8080:80 raesene/bwapp (Modo daemon) (-d -t Deatached y terminal)
+docker stop 4s67236327eb (Parar el demonio)
+docker stop romantic_gates (Parar el demonio con el nombre de la imagen)
+#Para instalar: http://localhost:8080/install.php
+#Ya podemos acceder a  http://localhost:8080/
+
+
+-------------webGoat-------------
+docker pull webgoat/webgoat-7.1 
+docker run -p 5000:8080 -t webgoat/webgoat-7.1 (Modo normal)
+docker run -d -p 5000:8080 webgoat/webgoat-7.1 (Modo daemon)
+docker stop 4s67236327eb (Parar daemon)
+docker start naughty_wu
+http://localhost:5000/WebGoat
+
+-------------juice-shop-------------
+docker pull bkimminich/juice-shop
+docker run --rm -p 3000:3000 bkimminich/juice-shop
+
+http://localhost:3000
+
+--------Listar y Borrar Docker----------
+docker ps #Todos los docker activos
+docker ps -a #Todos los docker
+docker rm 4s67236327eb -f #Borrarlo
+docker image ls (borra imagenes)
+docker image rm 75835a67d134 2a4cca5ac898
+
+-------Obtener la dirección ip interna del contenedor------
+docker run alpine ifconfig
+
+-------Mantener el contenedor en ejecución e incluso interactuar con él------
+docker run -it alpine (Foreground/interactive (-it))
+
+-------Asignar un nombre a un contenedor---------
+docker run --name test alpine
+
+-------Ver log de un docker----------
+docker logs funny_bouman
+
+-------Ver información del docker----------
+docker inspect funny_bouman
+-----------------------------------------------------------------------------------------------------------------------------
+-------Tutorial de Docker-----
+-------Persistencia en nuestra Base de Datos------
+#Crear docker para que si modifica algo y se elimina el docker y se vuelve a crear sigan apareciendo los cambios
+docker volume create todo-db
+docker run -dp 3000:3000 -v todo-db:/etc/todos docker-101
+docker rm -f <id>
+#Seguiría apareciendo lo mismo después de borrarlo
+docker run -dp 3000:3000 -v todo-db:/etc/todos docker-101
+docker volume inspect todo-db
+
+-------Crear Montajes ligados (Bind Mounts) #Sirve para Desarrollo
+#El contenedor puede ser modificado directamente desde los ficheros
+docker run -dp 3000:3000 \
+    -w /app -v $PWD:/app \
+    node:10-alpine \
+    sh -c "yarn install && yarn run dev"
+
+#Si falla podemos editar /app con el siguiente comando
+/home/prueba:/home/prueba/swarm:cached
+
+#Comando .code para editar codigo con Visual Studio Code
+
+-------Crear Aplicaciones Multi contenedor------------
+#Empezamos MySQL
+docker network create todo-app
+
+docker run -d \
+    --network todo-app --network-alias mysql \
+    -v todo-mysql-data:/var/lib/mysql \
+    -e MYSQL_ROOT_PASSWORD=secret \
+    -e MYSQL_DATABASE=todos \
+    mysql:5.7
+	
+#Nos pedirá la clave del servidor SQL, en este caso es secret
+docker exec -it <id> mysql -p todos
+SHOW DATABASES;
+select * from todo_items;
+
+#Si necesitamos borrar el volume y network
+#docker volume rm todo-mysql-data
+#docker network rm todo-app
+
+#Conectando a MySQL
+#Vemos que está en la misma red
+docker run -it --network todo-app nicolaka/netshoot
+dig mysql
+#docker inspect id #Hace lo mismo
+
+#Ejecutando nuestra App con MySQL 
+# -w directorio de trabajo -e variables de entornos
+docker run -dp 3000:3000 \
+  -w /app -v $PWD:/app \
+  --network todo-app \
+  -e MYSQL_HOST=mysql \
+  -e MYSQL_USER=root \
+  -e MYSQL_PASSWORD=secret \
+  -e MYSQL_DB=todos \
+  node:10-alpine \
+  sh -c "yarn install && yarn run dev"
+ 
+docker logs <container-id>
+docker exec -ti <mysql-container-id> mysql -p todos
+
+-------Pruebas--------
+docker run -dp 80:80 dockersamples/101-tutorial
+docker rm -f trusting_shockley (Para pararlo y borrarlo)
+docker images
+docker rmi $(docker images -q) #-q para el identificador
+docker rmi hello-world #Borra la imagen
+docker run -dp 3000:3000 docker-101
+docker rm $(sudo docker ps -aq) #Borrar todos los contenedores
+
+---------Docker de Zeckox---------
+docker run --init -it --rm --user www-data -v $(pwd):/app -w /app node:9 yarn encore dev

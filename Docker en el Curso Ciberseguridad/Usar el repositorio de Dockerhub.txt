@@ -1,0 +1,49 @@
+----------------Compartir una imagen en Dockerhub--------------
+#Es necesario tener un cuenta en docker. Tiene un ejemplo en el tutorial de inicio, apartado 4.
+https://docs.docker.com/get-started/04_sharing_app/
+docker images #Si ya tiene la imagen creada
+1. Acceder https://hub.docker.com
+2. Crear un repositorio de tipo publico 
+	1. nombre: getting-started
+	2. Público
+	3. Create
+3. Acceder desde CLI a dockerhub
+docker login -u <user>
+4. Modificar la etiqueta (tag) de la imagen local (es necesario que la etiqueta de la imagen a subir tenga el formato user/etiqueta)
+docker tag getting-started <user>/getting-started
+5. Subir la imagen
+docker push <user>/getting-started-test
+6. Salir de la sesión con docker logout
+docker logout
+
+#Otra opción para no tener que modificar la etiqueta de la imagen es haberla creado con la etiqueta correcta desde el principio si pensaba compartirla:
+docker build -t <user>/test .
+
+#Y en este enlace tiene otro ejemplo similar: https://github.com/docker/labs/blob/master/beginner/chapters/webapps.md
+
+----------------Crear un registro docker local-------------
+#Más info: https://docs.docker.com/registry/deploying/
+#Se puede mantener un registro propio para distribur sus imágenes en local
+docker service create --name registry --publish published=5000,target=5000
+docker service ls
+docker images
+
+#Usaremos una de las imágenes ya descargadas para añadir al registro local. 
+#Primero debe etiquetarla con el nombre (o IP) y puerto del servicio 
+#Cuando la primera parte de la etiqueta es un nombre de host y un puerto, Docker interpreta esto como la ubicación de un registro, al presionar
+
+docker tag getting-started:latest localhost:5000/getting-started
+docker images
+docker push localhost:5000/getting-started
+
+#Borramos la imagen local
+docker images
+
+#Hacemos una prueba de descarga local
+docker pull localhost:5000/getting-started
+
+#Para eliminar el servicio de registro
+docker service ls
+docker service rm registry
+docker service ls
+docker pull localhost:5000/getting-started #Dará error

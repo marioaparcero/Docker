@@ -1,0 +1,138 @@
+-------Usando Docker Compose-------
+docker-compose version
+
+https://docs.docker.com/compose/install/
+#Sino lo tenemos instalado
+sudo curl -L "https://github.com/docker/compose/releases/download/1.28.5/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose version
+
+#Si no podemos ver la version hay que vincular el path
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+#Opcional
+sudo curl -L https://github.com/docker/compose/releases/download/1.25.3/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+#También podemos usar
+sudo apt install docker-compose
+
+nano docker-compose.yml #dentro de app
+##########################################################################
+version: "3.7"
+
+services:
+  app:
+    image: node:10-alpine
+    command: sh -c "yarn install && yarn run dev"
+    ports:
+      - 3000:3000
+    working_dir: /app
+    volumes:
+      - ./:/app
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_DB: todos
+
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - todo-mysql-data:/var/lib/mysql
+    environment: 
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: todos
+
+volumes:
+  todo-mysql-data:
+##########################################################################  
+docker-compose -h #Para ayuda
+docker-compose up -d
+docker-compose logs -f
+docker-compose logs -f app
+docker-compose down
+
+---------Cluster con Docker Swarm (Enjambre)--------
+#Para hacerlo en Windows necesitamos docker machine
+En la 1º Maquina:
+mkdir swarm
+cd swarm/
+docker swarm init
+docker swarm join-token worker
+docker node ls #Ahora tenemos 1 nodo
+
+docker swarm join-token --help
+docker swarm join-token manager -q
+
+En la 2º Maquina:
+#Ejecutamos el comando que nos ha salido por pantalla del manager
+sudo docker swarm join --token .............
+
+En la 1º maquina:
+docker node ls #Ahora tenemos 2 nodos
+
+En la 3º maquina:
+sudo docker swarm join --token .............
+
+En la 1º maquina:
+docker node ls #Ahora tenemos 3 nodos
+
+#Creamos un servicio a partir de una imagen que muestra el nombre del equipo
+docker service create --replicas 1 --name helloworld -p 8080:8080 drhelius/helloworld-node-microservice
+
+#Veremos que desde cualquiera de los nodos se accede al servicio
+En la 1º maquina:
+curl localhost:8080
+
+En la 2º maquina:
+curl 192.168.0.17:8080
+
+En la 3º maquina:
+curl 192.168.0.17:8080
+
+#Escalamos el servicio en el manager
+docker service scale helloworld=3
+
+#Ahora las replica se distribuyen en los nodos, y responden round-robin
+
+En la 1º maquina:
+curl localhost:8080
+
+En la 2º maquina:
+curl 192.168.0.17:8080
+
+En la 3º maquina:
+curl 192.168.0.17:8080
+
+sudo docker service ls
+sudo docker service ps helloworld
+sudo docker service rm helloworld
+
+#Desplegar usando stack y fichero compose
+#####################################
+version: '3.7'
+
+services:
+  helloworld:
+	image: drhelius/helloworld-node-microservice
+	ports:
+		- "8080:8080"
+	deploy:
+		replicas: 2
+######################################
+docker stack deploy -c helloworld.yml demo
+
+docker node ls
+docker service ls
+
+En la 1º maquina:
+curl 127.0.0.1:8080
+
+En la 2º maquina:
+curl 192.168.0.17:8080
+
+#Herramienta gráfica: portainer
+https://www.portainer.io/
+
+curl -L https://downloads.portainer.io/portainer-agent-stack.yml -o portainer-agent-stack.yml
+docker stack deploy -c portainer-agent-stack.yml portainer
+docker service ls
+http://192.168.0.17:9000

@@ -1,0 +1,94 @@
+-----------No tan secreto: config----------
+https://blog.ruanbekker.com/blog/2019/02/28/use-swarm-managed-configs-in-docker-swarm-to-store-your-application-configs/
+cat > index.html << EOF
+<html>
+  <body>
+    Hello, World!
+  </body>
+</html>
+EOF
+#########################
+#Creando el config
+docker config create nginx_root_doc index.html
+
+#Creando el servicio
+docker service create --name web \
+  --config source=nginx_root_doc,target=/usr/share/nginx/html/index.html \
+  --publish 8080:80 nginx:alpine
+curl -i http://localhost:8080/
+
+#Elimina el servicio
+docker service rm web
+
+#Elimina el config
+docker config rm nginx_root_doc
+
+#Creando el compose
+nano docker-compose.yml
+##################################################
+version: "3.7"
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - 8080:80
+    networks:
+      - net
+    configs:
+      - source: nginx_root_doc
+        target: /usr/share/nginx/html/index.html
+
+configs:
+  nginx_root_doc:
+    file: ./index.html
+
+networks:
+  net:
+    driver: overlay
+###################################################
+
+#Desplegando nuestro stack
+docker stack deploy -c docker-compose.yml apps
+
+#Probando nuestros servicios
+curl -i http://localhost:8080/
+
+#Elimina el stack
+docker stack rm apps
+------------------------------------------------------------------------
+#Crea el config
+docker config create nginx_root_doc index.html
+
+#Creando el compose
+######################################################################
+version: "3.3"
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - 8080:80
+    networks:
+      - net
+    configs:
+      - source: nginx_root_doc
+        target: /usr/share/nginx/html/index.html
+
+configs:
+  nginx_root_doc:
+    external: true   # => si está creado con docker config create
+    # docker config create nginx_root_doc index.html
+
+networks:
+  net:
+    driver: overlay
+######################################################################
+
+#Desplegamos el stack
+docker stack deploy -c docker-compose.yml apps
+
+#Lo probamos
+curl -i http://localhost:8080/
+
+#Eliminamos el stack
+docker stack rm apps

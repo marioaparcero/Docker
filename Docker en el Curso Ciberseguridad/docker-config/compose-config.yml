@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - 8080:80
+    networks:
+      - net
+    configs:
+      - source: nginx_root_doc
+        target: /usr/share/nginx/html/index.html
+
+configs:
+  nginx_root_doc:
+    file: ./index.html
+    # external: true   # => si está creado con docker  config create
+    # sudo docker config create nginx_root_doc index.html
+
+
+networks:
+  net:
+    driver: overlay
